@@ -21,6 +21,7 @@ export async function setupApp(app: INestApplication): Promise<void> {
     'http://127.0.0.1:3001',
     'https://hcs-frontend.vercel.app', 
     'https://hcs-backend.vercel.app',
+    'https://hcs-frontend-three.vercel.app', // Added specific deployment URL
     // Add other production domains here
   ];
 
