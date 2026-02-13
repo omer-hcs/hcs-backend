@@ -8,7 +8,8 @@ export class AuthController {
   async handleAuth(@Req() req: Request, @Res() res: Response) {
     console.log(`[Auth] Handling request: ${req.method} ${req.url}`);
     const auth = await getAuth();
-    const { toNodeHandler } = await import('better-auth/node');
+    // Use eval to prevent TypeScript from transpiling import() to require()
+    const { toNodeHandler } = await (eval('import("better-auth/node")') as Promise<typeof import("better-auth/node")>);
     return toNodeHandler(auth)(req, res);
   }
 }

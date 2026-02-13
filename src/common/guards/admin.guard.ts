@@ -8,7 +8,8 @@ export class AdminGuard implements CanActivate {
     
     // Better-auth needs headers to verify session
     const auth = await getAuth();
-    const { fromNodeHeaders } = await import('better-auth/node');
+    // Use eval to prevent TypeScript from transpiling import() to require()
+    const { fromNodeHeaders } = await (eval('import("better-auth/node")') as Promise<typeof import("better-auth/node")>);
     const session = await auth.api.getSession({
         headers: fromNodeHeaders(request.headers),
     });
