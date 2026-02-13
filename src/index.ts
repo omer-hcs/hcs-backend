@@ -7,6 +7,15 @@ import { INestApplication } from '@nestjs/common';
 
 const expressApp = express();
 
+// Force Vercel to include better-auth dependencies (bypassing eval obfuscation)
+try {
+  if (false) {
+    require('better-auth');
+    require('better-auth/adapters/drizzle');
+    require('better-auth/node');
+  }
+} catch (e) {}
+
 const createNestServer = async (expressInstance: express.Express): Promise<INestApplication> => {
   const app = await NestFactory.create(
     AppModule,
