@@ -41,7 +41,13 @@ export const getAuth = async () => {
                 "https://hcs-frontend.vercel.app",
                 "https://hcs-backend.vercel.app",
                 "https://hcs-frontend-three.vercel.app"
-            ]
+            ],
+            advanced: {
+                cookie: {
+                    secure: true,
+                    sameSite: "none"
+                }
+            }
         });
 
         return authInstance;
