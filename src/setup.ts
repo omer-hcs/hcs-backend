@@ -25,7 +25,7 @@ export async function setupApp(app: INestApplication): Promise<void> {
   ];
 
   app.enableCors({
-    origin: (origin, callback) => {
+    origin: (origin: string, callback: (err: Error | null, allow?: boolean) => void) => {
       if (!origin || corsOrigins.includes(origin)) {
         callback(null, true);
       } else {
