@@ -12,36 +12,42 @@ let authInstance: ReturnType<typeof betterAuth> | null = null;
 export const getAuth = async () => {
     if (authInstance) return authInstance;
 
-    const { betterAuth } = await import("better-auth");
-    const { drizzleAdapter } = await import("better-auth/adapters/drizzle");
+    try {
+        const { betterAuth } = await import("better-auth");
+        const { drizzleAdapter } = await import("better-auth/adapters/drizzle");
 
-    authInstance = betterAuth({
-        database: drizzleAdapter(drizzle(new Pool({
-            connectionString: process.env.DATABASE_URL,
-            ssl: { rejectUnauthorized: false }
-        }), { schema }), {
-            provider: "pg",
-            schema: {
-                user: schema.user,
-                session: schema.session,
-                account: schema.account,
-                verification: schema.verification
+        authInstance = betterAuth({
+            database: drizzleAdapter(drizzle(new Pool({
+                connectionString: process.env.DATABASE_URL,
+                ssl: { rejectUnauthorized: false }
+            }), { schema }), {
+                provider: "pg",
+                schema: {
+                    user: schema.user,
+                    session: schema.session,
+                    account: schema.account,
+                    verification: schema.verification
+                },
+            }),
+            emailAndPassword: {
+                enabled: true,
             },
-        }),
-        emailAndPassword: {
-            enabled: true,
-        },
-        trustedOrigins: [
-            "http://localhost:3000",
-            "http://localhost:3001",
-            "http://127.0.0.1:3000",
-            "http://127.0.0.1:3001",
-            "https://hcs-frontend.vercel.app",
-            "https://hcs-backend.vercel.app"
-        ]
-    });
+            trustedOrigins: [
+                "http://localhost:3000",
+                "http://localhost:3001",
+                "http://127.0.0.1:3000",
+                "http://127.0.0.1:3001",
+                "https://hcs-frontend.vercel.app",
+                "https://hcs-backend.vercel.app",
+                "https://hcs-frontend-three.vercel.app"
+            ]
+        });
 
-    return authInstance;
+        return authInstance;
+    } catch (error) {
+        console.error("Failed to initialize better-auth:", error);
+        throw error;
+    }
 };
 
 // Type helper
