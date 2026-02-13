@@ -13,8 +13,9 @@ export const getAuth = async () => {
     if (authInstance) return authInstance;
 
     try {
-        const { betterAuth } = await import("better-auth");
-        const { drizzleAdapter } = await import("better-auth/adapters/drizzle");
+        // Use eval to prevent TypeScript from transpiling import() to require()
+        const { betterAuth } = await (eval('import("better-auth")') as Promise<typeof import("better-auth")>);
+        const { drizzleAdapter } = await (eval('import("better-auth/adapters/drizzle")') as Promise<typeof import("better-auth/adapters/drizzle")>);
 
         authInstance = betterAuth({
             database: drizzleAdapter(drizzle(new Pool({
