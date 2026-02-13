@@ -10,10 +10,13 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { AdminGuard } from '../../common/guards/admin.guard';
+import { UploadService } from './upload.service';
 
 @Controller('upload')
 @UseGuards(AdminGuard)
 export class UploadController {
+  constructor(private readonly uploadService: UploadService) {}
+
   @Post()
   @UseInterceptors(
     FileInterceptor('file', {
@@ -35,18 +38,22 @@ export class UploadController {
       },
     }),
   )
-  uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File) {
     if (!file) {
       throw new HttpException('File is required', HttpStatus.BAD_REQUEST);
     }
 
-    // Return file metadata since we are not persisting to disk
-    // In production, you would upload file.buffer to S3/Cloudinary here
-    return {
-      name: file.originalname,
-      size: file.size,
-      mimetype: file.mimetype,
-      message: 'File uploaded to memory. Implement S3/Cloudinary storage for persistence.',
-    };
+    try {
+      const result = await this.uploadService.uploadImage(file);
+      return {
+        url: result.secure_url,
+        publicId: result.public_id,
+        name: file.originalname,
+        size: file.size,
+        mimetype: file.mimetype,
+      };
+    } catch (error) {
+      throw new HttpException('Failed to upload image', HttpStatus.INTERNAL_SERVER_ERROR);
+    }
   }
 }
