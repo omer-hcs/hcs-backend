@@ -19,14 +19,16 @@ export class LeadsService {
   async create(dto: CreateLeadDto) {
     const [lead] = await this.db.insert(leads).values(dto).returning();
 
-    // Send emails asynchronously — do not await to keep response fast
-    this.emailService.sendAdminNotification(lead).catch((err) => {
-      this.logger.error(`Admin email failed: ${err.message}`);
-    });
-
-    this.emailService.sendUserConfirmation(lead).catch((err) => {
-      this.logger.error(`User confirmation email failed: ${err.message}`);
-    });
+    // Await email sending to ensure they finish before Vercel terminates the function
+    try {
+      await Promise.all([
+        this.emailService.sendAdminNotification(lead),
+        this.emailService.sendUserConfirmation(lead)
+      ]);
+    } catch (err: any) {
+      this.logger.error(`Email sending failed: ${err.message}`);
+      // We don't throw here to ensure the user still gets a success response since DB insert succeeded
+    }
 
     return lead;
   }
