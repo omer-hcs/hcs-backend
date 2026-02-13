@@ -8,7 +8,7 @@ export class AuthController {
   @All('*')
   async handleAuth(@Req() req: Request, @Res() res: Response) {
     console.log(`[Auth] Handling request: ${req.method} ${req.url}`);
-    const auth = getAuth();
+    const auth = await getAuth();
     return toNodeHandler(auth)(req, res);
   }
 }

@@ -8,7 +8,7 @@ export class AdminGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     
     // Better-auth needs headers to verify session
-    const auth = getAuth();
+    const auth = await getAuth();
     const session = await auth.api.getSession({
         headers: fromNodeHeaders(request.headers),
     });
