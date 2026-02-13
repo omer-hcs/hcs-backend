@@ -1,6 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { getAuth } from '../../lib/auth';
-import { fromNodeHeaders } from 'better-auth/node';
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -9,6 +8,7 @@ export class AdminGuard implements CanActivate {
     
     // Better-auth needs headers to verify session
     const auth = await getAuth();
+    const { fromNodeHeaders } = await import('better-auth/node');
     const session = await auth.api.getSession({
         headers: fromNodeHeaders(request.headers),
     });
